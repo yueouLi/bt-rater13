@@ -1,13 +1,12 @@
-
 import streamlit as st
 import pandas as pd
 import io
 
-# 设置页面标题和布局
-st.set_page_config(page_title="Backtranslation Rating - Rater 07", layout="centered")
-st.title("📝 Simplification Back-Translation Evaluation - Rater 07")
+# Set page config only once
+st.set_page_config(page_title="Backtranslation Rating - Rater 13", layout="centered")
+st.title("📝 Simplification Back-Translation Evaluation - Rater 13")
 
-    
+# Rating Guidelines
 with st.expander("📘 View Manual Scoring Guidelines"):
     st.markdown("""
 ### 🎯 **Manual Scoring Protocol (1–5 Scale)**
@@ -73,17 +72,11 @@ This study introduces a human evaluation protocol for **multilingual sentence si
 🔎 _Diversity ≠ quality. Use only when multiple references exist._
     """)
 
-
-
-# 读取 CSV 文件
+# Load CSV
 df = pd.read_csv("bt_merged_xiqun.csv", encoding="utf-8-sig")
-st.set_page_config(page_title="Backtranslation Rating - Rater 13", layout="centered")
-st.title("📝 Simplification Back-Translation Evaluation - Rater 13")
-
 rater_id = "rater13"
-ratings = []
 
-# 分页和状态保存
+# Pagination and session state
 samples_per_page = 10
 if "page" not in st.session_state:
     st.session_state.page = 0
@@ -93,21 +86,18 @@ if "ratings_data" not in st.session_state:
 start_idx = st.session_state.page * samples_per_page
 end_idx = min((st.session_state.page + 1) * samples_per_page, len(df))
 
-# 展示样本
+# Show samples and sliders
 for idx in range(start_idx, end_idx):
     row = df.iloc[idx]
     st.markdown(f"### 🔢 Sample {idx + 1}")
     st.markdown(f"**🟩 Source:**  \n{row['source']}")
-    st.markdown(f"**🦁Sprache 1 Back-Translation:**  \n{row['bt_de']}")
-   
-
+    st.markdown(f"**🦁 Sprache 1 Back-Translation:**  \n{row['bt_de']}")
     g_meaning = st.slider(f"Meaning (🦁) [{idx}]", 1, 5, 3, key=f"gm{idx}")
     g_fluency = st.slider(f"Fluency (🦁) [{idx}]", 1, 5, 3, key=f"gf{idx}")
     g_simplicity = st.slider(f"Simplicity (🦁) [{idx}]", 1, 5, 3, key=f"gs{idx}")
     g_diversity = st.slider(f"Diversity (🦁) [{idx}]", 1, 5, 3, key=f"gd{idx}")
-    
-    st.markdown(f"**🟩 Source:**  \n{row['source']}")
-    st.markdown(f"**🐮Sprache 2 Back-Translation:**  \n{row['bt_zh']}")
+
+    st.markdown(f"**🐮 Sprache 2 Back-Translation:**  \n{row['bt_zh']}")
     c_meaning = st.slider(f"Meaning (🐮) [{idx}]", 1, 5, 3, key=f"cm{idx}")
     c_fluency = st.slider(f"Fluency (🐮) [{idx}]", 1, 5, 3, key=f"cf{idx}")
     c_simplicity = st.slider(f"Simplicity (🐮) [{idx}]", 1, 5, 3, key=f"cs{idx}")
@@ -129,11 +119,11 @@ for idx in range(start_idx, end_idx):
         "c_diversity": c_diversity,
     }
 
-# 显示进度
+# Progress info
 st.markdown("---")
 st.markdown(f"📊 Progress: {len(st.session_state.ratings_data)} / {len(df)} samples rated.")
 
-# 翻页控制
+# Pagination and download controls
 col1, col2, col3 = st.columns([1, 1, 1])
 with col1:
     if st.button("⬅️ Previous") and st.session_state.page > 0:
